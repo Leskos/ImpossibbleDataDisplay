@@ -1,10 +1,10 @@
 import oscP5.*;
 import netP5.*;
-import spout.*;
+//import spout.*;
 
 
 OscP5 oscIn;
-Spout spout;
+//Spout spout;
 
 PFont font;
 PFont boldFont;
@@ -51,8 +51,8 @@ void setup()
 {
   size(1920, 1080, P3D);
   
-  spout = new Spout(this);
-  spout.createSender("!mpossible stats");
+  //spout = new Spout(this);
+  //spout.createSender("!mpossible stats");
 
   oscIn = new OscP5( this, 7000 );
 
@@ -239,7 +239,7 @@ void draw()
 
   text( "Prize Pot : £" + prizePot, textX, 800 );
   
-  spout.sendTexture();  
+  //spout.sendTexture();  
 }
 
 void setTextColour( String state )
