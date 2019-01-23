@@ -279,10 +279,11 @@ void setGridStyle( )
     {
       gridBgColour[podiumIndex-1]   = color( 120, 20, 20 );
       gridTextColour[podiumIndex-1] = color( 120, 20, 20 );
-    } else if ( stateStr.equals("FINALIST_1") || stateStr.equals("FINALIST_2") || stateStr.equals("FINALIST_3") )
+    } 
+    else if ( stateStr.equals("FINALIST_1") || stateStr.equals("FINALIST_2") || stateStr.equals("FINALIST_3") )
     {
-      gridBgColour[podiumIndex-1]   = color( 100, 100, 0 );
-      gridTextColour[podiumIndex-1] = color( 100, 100, 0 );
+      gridBgColour[podiumIndex-1]   = color( 147, 34, 14 );
+      gridTextColour[podiumIndex-1] = color( 147, 34, 14 );
     } 
     else
     {
