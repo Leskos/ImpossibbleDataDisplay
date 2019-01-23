@@ -43,6 +43,8 @@ color unansweredColour = color( 180, 180, 180 );
 color outColour        = color(   0, 0, 0 );
 color finalistColour   = color( 220, 255, 0 );
 
+color[] gridBgColour;
+color[] gridTextColour;
 
 void setup()
 {
@@ -68,13 +70,23 @@ void setup()
   sortedData[0][7] = "TOTAL TIME";
   sortedData[0][8] = "POINTS";
 
+  gridBgColour   = new color[21];
+  gridTextColour = new color[21];
+
   for ( int row=1; row<22; row++ ) 
   {
+    gridBgColour[row-1]   = color( 50 );
+    gridTextColour[row-1] = color( 70 );
     for ( int col=0; col<9; col++ ) 
     {
       sortedData[row][col]   = "-";
     }
+    
+    sortedData[row][0]     = Integer.toString(row);               // Add a podium position
+    sortedData[row][1]     = "Contestant "+Integer.toString(row); // Add a name
+    sortedData[row][2]     = "0";                                 // Add a lastAnswered
   }
+  
 }
 
 
@@ -161,7 +173,7 @@ void draw()
   textX = 1400;
   textSize( 60 );
   fill(255);
-  
+
   questionInt = Integer.parseInt( R1Q );
   if ( questionInt > 0 )
   {
@@ -180,26 +192,150 @@ void draw()
     }
   }
 
-  text( stillIn    + " contestants in play",                  textX, 200 );
+  text( stillIn    + " contestants in play", textX, 200 );
   text( topScorers + " contestants on " +topScore+ " points", textX, 300 );
 
   setCorrectWrongImpossText();
   textSize( 100 );
   fill( 0, 255, 0 );
-  text( correctText,    textX-20, 490 );
+  text( correctText, textX-20, 460 );
   fill( 255, 0, 0 );
-  text( impossibleText, textX-20, 610 );
-  fill( 0, 0, 0 );
-  text( wrongText,      textX-20, 730 );
+  text( impossibleText, textX-20, 580 );
+  fill( 100 );
+  text( wrongText, textX-20, 700 );
   textSize( 60 );
-  
-  
+
+  drawGrid();
+
   fill( 255, 255, 255 );
-  text( "Prize Pot : £" + prizePot, textX,   880 );
-  text( "A : "          + numA,     textX,  1000 );
-  text( "B : "          + numB,     textX+180, 1000 );
-  text( "C : "          + numC,     textX+350, 1000 );
+  textSize(80);
+  text( "£" + prizePot +" Prize Pot", textX, 1050 );
+
+  //text( "A : "          + numA,     textX,  1000 );
+  //text( "B : "          + numB,     textX+180, 1000 );
+  //text( "C : "          + numC,     textX+350, 1000 );
+}
+
+void drawGrid()
+{
+  pushStyle();
+  rectMode( CORNER );
+  textAlign( CENTER, CENTER );
+  fill( 100, 100, 100 );
+
+  float xPos  = 0;
+  float yPos  = 0;
+  float rowX  = 1370;
+  float rowY  = 880;
+  float rectW = 75;
+  float rectH = 65;
+  float sp    = 2;
+
+  int contIndex = 1;
+
+  noStroke();
+  for ( int y=0; y<3; y++ )
+  {  
+    for ( int x=0; x<7; x++ )
+    {
+      xPos = rowX + x*(rectW+sp);
+      yPos = rowY - y*(rectH+sp);
+      
+      setGridStyle();
+      
+      fill( gridBgColour[contIndex-1] );  
+      rect( xPos, yPos, rectW, rectH );
+      
+      fill( gridTextColour[contIndex-1] );
+      text( contIndex, xPos+rectW/2, -4+yPos+rectH/2 );
+      
+      contIndex+=1;
+    }
+  }
+
+  popStyle();
+}
+
+
+void setGridStyle( )
+{
+  int highestAnswered = 0;
+  for( int i=1; i<22; i++ )
+  {
+    int lastAnswered = Integer.parseInt(sortedData[i][2]);
+    if( lastAnswered > highestAnswered )
+    {
+      highestAnswered = lastAnswered;
+    }
+  }
   
+  for( int i=1; i<22; i++ )
+  {
+    String stateStr  = sortedData[ i ][ 4 ];
+    String answerStr = sortedData[ i ][ 5 ];
+    int podiumIndex  = Integer.parseInt(sortedData[ i ][ 0 ]);
+    
+    if ( stateStr.equals("OUT - Imposs") || stateStr.equals("OUT - No Answer") ) 
+    {
+      gridBgColour[podiumIndex-1]   = color( 120, 20, 20 );
+      gridTextColour[podiumIndex-1] = color( 120, 20, 20 );
+    } else if ( stateStr.equals("FINALIST_1") || stateStr.equals("FINALIST_2") || stateStr.equals("FINALIST_3") )
+    {
+      gridBgColour[podiumIndex-1]   = color( 100, 100, 0 );
+      gridTextColour[podiumIndex-1] = color( 100, 100, 0 );
+    } 
+    else
+    {
+      answerStr = sortedData[ i ][ 5 ];
+      gridBgColour[podiumIndex-1] = color(0);
+      
+      if( answerStr.equals( correctAnswer ) )
+      {
+        if( stateStr.equals( "Answered" ) )
+        {
+          gridBgColour[podiumIndex-1]   = color(0,50,0);
+          gridTextColour[podiumIndex-1] = color(0,255,0);
+        }
+        else
+        {
+          gridBgColour[podiumIndex-1]   = blockColour;
+          gridTextColour[podiumIndex-1] = color(0,150,0);
+        }
+      }
+      else if( answerStr.equals( impossibleAnswer ) )
+      {
+        if( stateStr.equals( "Answered" ) )
+        {
+          gridBgColour[podiumIndex-1]   = color(0,0,0);
+          gridTextColour[podiumIndex-1] = color(255,0,0);
+        }
+        else
+        {
+          gridBgColour[podiumIndex-1]   = blockColour;
+          gridTextColour[podiumIndex-1] = color(150,0,0);
+        }
+      }
+      else if( answerStr.equals( wrongAnswer ) )
+      {
+        gridBgColour[podiumIndex-1]   = blockColour;
+        gridTextColour[podiumIndex-1] = color(100);
+      }
+      else
+      {
+        int lastAnswered = Integer.parseInt(sortedData[i][2]);
+        if ( lastAnswered < highestAnswered )
+        {
+          gridBgColour[podiumIndex-1]   = color(255,0,0);
+          gridTextColour[podiumIndex-1] = color(100,0,0);
+        }
+        else
+        {
+          gridBgColour[podiumIndex-1]   = blockColour;
+          gridTextColour[podiumIndex-1] = color(100);
+        }
+      }
+    }
+  }
 }
 
 
@@ -234,7 +370,7 @@ void setCorrectWrongImpossText()
 void setTextColour( String state )
 {
   fill( textColour );
-
+  
   if ( state.equals( "Correct" ) ) 
   {
     fill( correctColour );
