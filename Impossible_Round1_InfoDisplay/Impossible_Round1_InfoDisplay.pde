@@ -46,7 +46,8 @@ color finalistColour   = color( 220, 255, 0 );
 
 void setup()
 {
-  size(1920, 1080, P3D);
+  //size(1920, 1080, P3D);
+  fullScreen( P3D );
 
   oscIn = new OscP5( this, 7000 );
 
