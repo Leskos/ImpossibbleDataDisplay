@@ -183,18 +183,21 @@ void draw()
   text( topScorers + " contestants on " +topScore+ " points", textX, 300 );
 
   setCorrectWrongImpossText();
+  textSize( 100 );
   fill( 0, 255, 0 );
-  text( correctText,    textX, 470 );
-  fill( 0 );
-  text( wrongText,      textX, 570 );
+  text( correctText,    textX-20, 490 );
   fill( 255, 0, 0 );
-  text( impossibleText, textX, 670 );
-
+  text( impossibleText, textX-20, 610 );
+  fill( 0, 0, 0 );
+  text( wrongText,      textX-20, 730 );
+  textSize( 60 );
+  
+  
   fill( 255, 255, 255 );
-  text( "Prize Pot : £" + prizePot, textX,      840 );
-  text( "A : "          + numA,     textX+20,  1000 );
-  text( "B : "          + numB,     textX+200, 1000 );
-  text( "C : "          + numC,     textX+370, 1000 );
+  text( "Prize Pot : £" + prizePot, textX,   880 );
+  text( "A : "          + numA,     textX,  1000 );
+  text( "B : "          + numB,     textX+180, 1000 );
+  text( "C : "          + numC,     textX+350, 1000 );
   
 }
 
@@ -202,27 +205,27 @@ void draw()
 void setCorrectWrongImpossText()
 {
   if (        correctAnswer.equals( "A" ) ) { 
-    correctText  = numA + " Correct (A)";
+    correctText  = numA + " (A) Correct";
   } else if ( correctAnswer.equals( "B" ) ) { 
-    correctText  = numB + " Correct (B)";
+    correctText  = numB + " (B) Correct";
   } else if ( correctAnswer.equals( "C" ) ) { 
-    correctText  = numC + " Correct (C)";
+    correctText  = numC + " (C) Correct";
   }
 
   if (        wrongAnswer.equals( "A" ) ) { 
-    wrongText    = numA + " Wrong (A)";
+    wrongText    = numA + " (A) Wrong";
   } else if ( wrongAnswer.equals( "B" ) ) { 
-    wrongText    = numB + " Wrong (B)";
+    wrongText    = numB + " (B) Wrong";
   } else if ( wrongAnswer.equals( "C" ) ) { 
-    wrongText    = numC + " Wrong (C)";
+    wrongText    = numC + " (C) Wrong";
   }
 
   if (          impossibleAnswer.equals( "A" ) ) { 
-    impossibleText = numA + " !mpossible (A)";
+    impossibleText = numA + " (A) !mpossible";
   } else if (   impossibleAnswer.equals( "B" ) ) { 
-    impossibleText = numB + " !mpossible (B)";
+    impossibleText = numB + " (B) !mpossible";
   } else if (   impossibleAnswer.equals( "C" ) ) { 
-    impossibleText = numC + " !mpossible (C)";
+    impossibleText = numC + " (C) !mpossible";
   }
 }
 
