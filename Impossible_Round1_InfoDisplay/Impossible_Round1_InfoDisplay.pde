@@ -198,22 +198,20 @@ void draw()
   setCorrectWrongImpossText();
   textSize( 100 );
   fill( 0, 255, 0 );
-  text( correctText, textX-20, 460 );
+  text( correctText, textX-20, 450 );
   fill( 255, 0, 0 );
-  text( impossibleText, textX-20, 580 );
+  text( impossibleText, textX-20, 570 );
   fill( 100 );
-  text( wrongText, textX-20, 700 );
+  text( wrongText, textX-20, 690 );
   textSize( 60 );
 
   drawGrid();
 
   fill( 255, 255, 255 );
   textSize(80);
-  text( "£" + prizePot +" Prize Pot", textX, 1050 );
-
-  //text( "A : "          + numA,     textX,  1000 );
-  //text( "B : "          + numB,     textX+180, 1000 );
-  //text( "C : "          + numC,     textX+350, 1000 );
+  
+  // TODO : Centered text mode
+  text( "£" + prizePot +" Prize Pot", textX+80, 1050 );
 }
 
 void drawGrid()
@@ -259,13 +257,14 @@ void drawGrid()
 
 void setGridStyle( )
 {
-  int highestAnswered = 0;
+  boolean answersExist = false;
   for( int i=1; i<22; i++ )
   {
-    int lastAnswered = Integer.parseInt(sortedData[i][2]);
-    if( lastAnswered > highestAnswered )
+    String stateStr  = sortedData[ i ][ 4 ];
+    if( stateStr.equals("Answered") )
     {
-      highestAnswered = lastAnswered;
+      answersExist = true;
+      break;
     }
   }
   
@@ -323,11 +322,14 @@ void setGridStyle( )
       }
       else
       {
-        int lastAnswered = Integer.parseInt(sortedData[i][2]);
-        if ( lastAnswered < highestAnswered )
+        if( answersExist )
         {
-          gridBgColour[podiumIndex-1]   = color(255,0,0);
-          gridTextColour[podiumIndex-1] = color(100,0,0);
+          int lastAnswered = Integer.parseInt(sortedData[i][2]);
+          if( lastAnswered == Integer.parseInt(R1Q) )
+          {
+            gridBgColour[podiumIndex-1] = color(255,0,0);
+          gridTextColour[podiumIndex-1] = color(0,0,0);
+          }
         }
         else
         {
