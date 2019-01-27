@@ -43,8 +43,9 @@ color unansweredColour = color( 180, 180, 180 );
 color outColour        = color(   0, 0, 0 );
 color finalistColour   = color( 220, 255, 0 );
 
-color[] gridBgColour;
-color[] gridTextColour;
+color[]  gridBgColour;
+color[]  gridTextColour;
+String[] gridName;
 
 void setup()
 {
@@ -72,21 +73,22 @@ void setup()
 
   gridBgColour   = new color[21];
   gridTextColour = new color[21];
+  gridName       = new String[21];
 
   for ( int row=1; row<22; row++ ) 
   {
     gridBgColour[row-1]   = color( 50 );
     gridTextColour[row-1] = color( 70 );
+    gridName[row-1]       = "";
     for ( int col=0; col<9; col++ ) 
     {
       sortedData[row][col]   = "-";
     }
-    
+
     sortedData[row][0]     = Integer.toString(row);               // Add a podium position
     sortedData[row][1]     = "Contestant "+Integer.toString(row); // Add a name
     sortedData[row][2]     = "0";                                 // Add a lastAnswered
   }
-  
 }
 
 
@@ -137,7 +139,6 @@ void draw()
       }
     }
   }
-  //println( "High Score : " +topScore+ " - " +topScorers+ " contestants on high score" );
 
   // Draw the table of sorted data
   for ( int row=0; row<22; row++ )
@@ -147,17 +148,40 @@ void draw()
     {
       rectMode( CORNERS );
       fill( blockColour );
-      rect( xStart-(xSpacing/2), yPos-(ySpacing/2), xStart+(xSpacing*8.45), yPos+(ySpacing/2) );
+      rect( xStart-(xSpacing/2), yPos-(ySpacing/2), xStart+(xSpacing*6), yPos+(ySpacing/2) );
     }
 
     // Set colour according to contestant's state
     setTextColour( sortedData[row][ 4 ] );
 
-    // Draw the data
-    for ( int col=0; col<9; col++ ) 
+    // Draw the data (NEW COMPACTED VERSION)
+    if ( row==0 )
     {
-      text( sortedData[row][col], xPos, yPos-3 );
-      xPos += xSpacing;
+      text( "CONTESTANT", xPos+30, yPos );
+      text( "T : R/W/I", xPos+xSpacing*1.3, yPos );
+      text( "STATE", xPos+xSpacing*2.3, yPos );
+      text( "ANSWER", xPos+xSpacing*3.2, yPos );
+      text( "TIME", xPos+xSpacing*4.0, yPos );
+      text( "TOTAL", xPos+xSpacing*4.8, yPos );
+      text( "POINTS", xPos+xSpacing*5.6, yPos );
+    } else
+    {
+      // Contestant position and name 
+      textAlign(LEFT, CENTER);
+      String posStr = sortedData[row][0];
+      if ( Integer.parseInt(posStr)<10 )
+      {
+        posStr +=  "  ";
+      }
+      text( posStr+"  "+sortedData[row][1], xPos-50, yPos-3 );
+
+      textAlign(CENTER, CENTER);
+      text( sortedData[row][3], xPos+xSpacing*1.3, yPos-3 ); // T:R/W/I
+      text( sortedData[row][4], xPos+xSpacing*2.3, yPos-3 ); // State
+      text( sortedData[row][5], xPos+xSpacing*3.2, yPos-3 ); // Answer 
+      text( sortedData[row][6], xPos+xSpacing*4.0, yPos-3 ); // Time
+      text( sortedData[row][7], xPos+xSpacing*4.8, yPos-3 ); // Total Time
+      text( sortedData[row][8], xPos+xSpacing*5.6, yPos-3 ); // Points
     }
 
     textFont( font );
@@ -169,49 +193,48 @@ void draw()
   float textX = xStart*2+(xSpacing*7.5);
 
   textFont(largeFont);
-  textAlign(LEFT);
-  textX = 1400;
-  textSize( 60 );
+  textAlign(CENTER, CENTER);
+
+  textX = 1420;
+  textSize( 70 );
   fill(255);
 
   questionInt = Integer.parseInt( R1Q );
   if ( questionInt > 0 )
   {
-    if ( questionInt < 6 ) 
-    {
-      text( "Question " +questionInt+ " (round 1)", textX, 100 );
-    } else if ( questionInt < 11 ) 
-    {
-      text( "Question " +(questionInt-5)+ " (round 2)", textX, 100 );
-    } else if ( questionInt < 16 ) 
-    {
-      text( "Question " +(questionInt-10)+ " (round 3)", textX, 100 );
-    } else 
-    {
-      text( "Not in Gameplay", textX, 100 );
+    if ( questionInt < 6 ) {
+      text( "Question " +questionInt+ " of Round 1", textX, 50 );
+    } else if ( questionInt < 11 ) {
+      text( "Question " +(questionInt-5)+ " of Round 2", textX, 50 );
+    } else if ( questionInt < 16 ) {
+      text( "Question " +(questionInt-10)+ " of Round 3", textX, 50 );
+    } else {
+      text( "Not in Gameplay", textX, 50 );
     }
   }
 
-  text( stillIn    + " contestants in play", textX, 200 );
-  text( topScorers + " contestants on " +topScore+ " points", textX, 300 );
+  String stillInStr = stillIn    + " still in play, "+topScorers+ " on " +topScore+ " point";
+  if ( topScore != 1)
+  {
+    stillInStr += "s";
+  }
+  text( stillInStr, textX, 130 );
+
 
   setCorrectWrongImpossText();
   textSize( 100 );
   fill( 0, 255, 0 );
-  text( correctText, textX-20, 450 );
+  text( correctText, textX, 260 );
   fill( 255, 0, 0 );
-  text( impossibleText, textX-20, 570 );
+  text( impossibleText, textX, 370 );
   fill( 100 );
-  text( wrongText, textX-20, 690 );
-  textSize( 60 );
+  text( wrongText, textX, 480 );
 
   drawGrid();
-
-  fill( 255, 255, 255 );
-  textSize(80);
   
-  // TODO : Centered text mode
-  text( "£" + prizePot +" Prize Pot", textX+80, 1050 );
+  textSize(90);
+  fill(255);
+  text( "£" + prizePot +" Prize Pot", textX, 1000 );
 }
 
 void drawGrid()
@@ -223,11 +246,11 @@ void drawGrid()
 
   float xPos  = 0;
   float yPos  = 0;
-  float rowX  = 1370;
-  float rowY  = 880;
-  float rectW = 75;
-  float rectH = 65;
-  float sp    = 2;
+  float rowX  = 1010;
+  float rowY  = 820;
+  float rectW = 125;
+  float rectH = 105;
+  float sp    = 3;
 
   int contIndex = 1;
 
@@ -238,15 +261,21 @@ void drawGrid()
     {
       xPos = rowX + x*(rectW+sp);
       yPos = rowY - y*(rectH+sp);
-      
+
       setGridStyle();
-      
+
       fill( gridBgColour[contIndex-1] );  
       rect( xPos, yPos, rectW, rectH );
       
+      textFont(boldFont);
+      textSize( 60 );
       fill( gridTextColour[contIndex-1] );
-      text( contIndex, xPos+rectW/2, -4+yPos+rectH/2 );
+      text( contIndex, xPos+rectW/2, -25+yPos+rectH/2 );
       
+      textFont(largeFont);
+      textSize( 31 );
+      text( gridName[contIndex-1], xPos+rectW/2, 25+yPos+rectH/2 );
+
       contIndex+=1;
     }
   }
@@ -258,80 +287,75 @@ void drawGrid()
 void setGridStyle( )
 {
   boolean answersExist = false;
-  for( int i=1; i<22; i++ )
+  for ( int i=1; i<22; i++ )
   {
     String stateStr  = sortedData[ i ][ 4 ];
-    if( stateStr.equals("Answered") )
+    if ( stateStr.equals("Answered") )
     {
       answersExist = true;
       break;
     }
   }
-  
-  for( int i=1; i<22; i++ )
+
+  for ( int i=1; i<22; i++ )
   {
     String stateStr  = sortedData[ i ][ 4 ];
     String answerStr = sortedData[ i ][ 5 ];
     int podiumIndex  = Integer.parseInt(sortedData[ i ][ 0 ]);
-    
+
+    gridName[ podiumIndex-1 ] = sortedData[ i ][ 1 ]; 
+
     if ( stateStr.equals("OUT - Imposs") || stateStr.equals("OUT - No Answer") ) 
     {
       gridBgColour[podiumIndex-1]   = color( 120, 20, 20 );
       gridTextColour[podiumIndex-1] = color( 120, 20, 20 );
-    } 
-    else if ( stateStr.equals("FINALIST_1") || stateStr.equals("FINALIST_2") || stateStr.equals("FINALIST_3") )
+    } else if ( stateStr.equals("FINALIST_1") || stateStr.equals("FINALIST_2") || stateStr.equals("FINALIST_3") )
     {
       gridBgColour[podiumIndex-1]   = color( 147, 34, 14 );
       gridTextColour[podiumIndex-1] = color( 147, 34, 14 );
-    } 
-    else
+      //gridTextColour[podiumIndex-1] = color( 180, 180, 14 );
+    } else
     {
       answerStr = sortedData[ i ][ 5 ];
       gridBgColour[podiumIndex-1] = color(0);
-      
-      if( answerStr.equals( correctAnswer ) )
+
+      if ( answerStr.equals( correctAnswer ) )
       {
-        if( stateStr.equals( "Answered" ) )
+        if ( stateStr.equals( "Answered" ) )
         {
-          gridBgColour[podiumIndex-1]   = color(0,50,0);
-          gridTextColour[podiumIndex-1] = color(0,255,0);
-        }
-        else
+          gridBgColour[podiumIndex-1]   = color(0, 50, 0);
+          gridTextColour[podiumIndex-1] = color(0, 255, 0);
+        } else
         {
           gridBgColour[podiumIndex-1]   = blockColour;
-          gridTextColour[podiumIndex-1] = color(0,150,0);
+          gridTextColour[podiumIndex-1] = color(0, 150, 0);
         }
-      }
-      else if( answerStr.equals( impossibleAnswer ) )
+      } else if ( answerStr.equals( impossibleAnswer ) )
       {
-        if( stateStr.equals( "Answered" ) )
+        if ( stateStr.equals( "Answered" ) )
         {
-          gridBgColour[podiumIndex-1]   = color(0,0,0);
-          gridTextColour[podiumIndex-1] = color(255,0,0);
-        }
-        else
+          gridBgColour[podiumIndex-1]   = color(0, 0, 0);
+          gridTextColour[podiumIndex-1] = color(255, 0, 0);
+        } else
         {
           gridBgColour[podiumIndex-1]   = blockColour;
-          gridTextColour[podiumIndex-1] = color(150,0,0);
+          gridTextColour[podiumIndex-1] = color(150, 0, 0);
         }
-      }
-      else if( answerStr.equals( wrongAnswer ) )
+      } else if ( answerStr.equals( wrongAnswer ) )
       {
         gridBgColour[podiumIndex-1]   = blockColour;
         gridTextColour[podiumIndex-1] = color(100);
-      }
-      else
+      } else
       {
-        if( answersExist )
+        if ( answersExist )
         {
           int lastAnswered = Integer.parseInt(sortedData[i][2]);
-          if( lastAnswered == Integer.parseInt(R1Q) )
+          if ( lastAnswered == Integer.parseInt(R1Q) )
           {
-            gridBgColour[podiumIndex-1] = color(255,0,0);
-          gridTextColour[podiumIndex-1] = color(0,0,0);
+            gridBgColour[podiumIndex-1] = color(255, 0, 0);
+            gridTextColour[podiumIndex-1] = color(0, 0, 0);
           }
-        }
-        else
+        } else
         {
           gridBgColour[podiumIndex-1]   = blockColour;
           gridTextColour[podiumIndex-1] = color(100);
@@ -373,7 +397,7 @@ void setCorrectWrongImpossText()
 void setTextColour( String state )
 {
   fill( textColour );
-  
+
   if ( state.equals( "Correct" ) ) 
   {
     fill( correctColour );
