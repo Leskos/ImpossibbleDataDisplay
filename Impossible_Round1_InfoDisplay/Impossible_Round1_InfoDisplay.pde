@@ -1,8 +1,10 @@
 import oscP5.*;
 import netP5.*;
-
-
 OscP5 oscIn;
+
+
+boolean celebMode = true;
+
 
 PFont font;
 PFont boldFont;
@@ -47,10 +49,19 @@ color[]  gridBgColour;
 color[]  gridTextColour;
 String[] gridName;
 
+int NUM_CONTS     = 21;
+int NUM_PER_ROW   = 7;
+
+
 void setup()
 {
-  //size(1920, 1080, P3D);
   fullScreen( P3D );
+
+  if( celebMode )
+  {
+    NUM_CONTS   = 18;
+    NUM_PER_ROW = 6;
+  }
 
   oscIn = new OscP5( this, 7000 );
 
@@ -70,12 +81,13 @@ void setup()
   sortedData[0][6] = "TIME";
   sortedData[0][7] = "TOTAL TIME";
   sortedData[0][8] = "POINTS";
+  
 
-  gridBgColour   = new color[21];
-  gridTextColour = new color[21];
-  gridName       = new String[21];
+  gridBgColour   = new color[  NUM_CONTS ];
+  gridTextColour = new color[  NUM_CONTS ];
+  gridName       = new String[ NUM_CONTS ];
 
-  for ( int row=1; row<22; row++ ) 
+  for ( int row=1; row<NUM_CONTS+1; row++ ) 
   {
     gridBgColour[row-1]   = color( 50 );
     gridTextColour[row-1] = color( 70 );
@@ -85,9 +97,9 @@ void setup()
       sortedData[row][col]   = "-";
     }
 
-    sortedData[row][0]     = Integer.toString(row);               // Add a podium position
-    sortedData[row][1]     = "Contestant "+Integer.toString(row); // Add a name
-    sortedData[row][2]     = "0";                                 // Add a lastAnswered
+    sortedData[row][0]     = Integer.toString(row);         // Add a podium position
+    sortedData[row][1]     = "Cont "+Integer.toString(row); // Add a name
+    sortedData[row][2]     = "0";                           // Add a lastAnswered
   }
 }
 
@@ -105,6 +117,11 @@ void draw()
   float ySpacing = 48;
   float xPos     = xStart;
   float yPos     = yStart;
+  
+  if( celebMode )
+  {
+    ySpacing = 55;
+  }
 
   textFont( boldFont );
 
@@ -114,7 +131,7 @@ void draw()
   boolean stillInPlay = true;
 
   // Find how many contestants are on the top score
-  for ( int i=1; i<22; i++ )
+  for ( int i=1; i<NUM_CONTS+1; i++ )
   {
     if ( sortedData[i][4].equals("OUT - Imposs") || sortedData[i][4].equals("OUT - No Answer") )
     {
@@ -141,7 +158,7 @@ void draw()
   }
 
   // Draw the table of sorted data
-  for ( int row=0; row<22; row++ )
+  for ( int row=0; row<NUM_CONTS+1; row++ )
   {
     // Draw boxes on alternating lines
     if ( row % 2 == 1 ) 
@@ -157,13 +174,13 @@ void draw()
     // Draw the data (NEW COMPACTED VERSION)
     if ( row==0 )
     {
-      text( "CONTESTANT", xPos+30, yPos );
-      text( "T : R/W/I", xPos+xSpacing*1.3, yPos );
-      text( "STATE", xPos+xSpacing*2.3, yPos );
-      text( "ANSWER", xPos+xSpacing*3.2, yPos );
-      text( "TIME", xPos+xSpacing*4.0, yPos );
-      text( "TOTAL", xPos+xSpacing*4.8, yPos );
-      text( "POINTS", xPos+xSpacing*5.6, yPos );
+      text( "CONTESTANT", xPos+30,           yPos );
+      text( "T : R/W/I",  xPos+xSpacing*1.3, yPos );
+      text( "STATE",      xPos+xSpacing*2.3, yPos );
+      text( "ANSWER",     xPos+xSpacing*3.2, yPos );
+      text( "TIME",       xPos+xSpacing*4.0, yPos );
+      text( "TOTAL",      xPos+xSpacing*4.8, yPos );
+      text( "POINTS",     xPos+xSpacing*5.6, yPos );
     } else
     {
       // Contestant position and name 
@@ -247,17 +264,25 @@ void drawGrid()
   float xPos  = 0;
   float yPos  = 0;
   float rowX  = 1010;
-  float rowY  = 820;
+  float rowY  = 800;
   float rectW = 125;
   float rectH = 105;
   float sp    = 3;
-
+  int nameFontSize = 31;
+  
+  if( celebMode )
+  {
+    rowX  = 1005;
+    rectW = 148;
+    nameFontSize = 35;
+  }
+  
   int contIndex = 1;
 
   noStroke();
   for ( int y=0; y<3; y++ )
   {  
-    for ( int x=0; x<7; x++ )
+    for ( int x=0; x<NUM_PER_ROW; x++ )
     {
       xPos = rowX + x*(rectW+sp);
       yPos = rowY - y*(rectH+sp);
@@ -273,7 +298,7 @@ void drawGrid()
       text( contIndex, xPos+rectW/2, -25+yPos+rectH/2 );
       
       textFont(largeFont);
-      textSize( 31 );
+      textSize( nameFontSize );
       text( gridName[contIndex-1], xPos+rectW/2, 25+yPos+rectH/2 );
 
       contIndex+=1;
@@ -287,7 +312,7 @@ void drawGrid()
 void setGridStyle( )
 {
   boolean answersExist = false;
-  for ( int i=1; i<22; i++ )
+  for ( int i=1; i<NUM_CONTS; i++ )
   {
     String stateStr  = sortedData[ i ][ 4 ];
     if ( stateStr.equals("Answered") )
@@ -297,7 +322,7 @@ void setGridStyle( )
     }
   }
 
-  for ( int i=1; i<22; i++ )
+  for ( int i=1; i<NUM_CONTS+1; i++ )
   {
     String stateStr  = sortedData[ i ][ 4 ];
     String answerStr = sortedData[ i ][ 5 ];
