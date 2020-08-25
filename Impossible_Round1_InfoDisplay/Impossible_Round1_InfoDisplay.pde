@@ -3,8 +3,15 @@ import netP5.*;
 OscP5 oscIn;
 
 
-boolean celebMode = true;
+//boolean celebMode = true;
 
+enum Mode{
+  NORMAL, 
+  CELEB, 
+  COVID
+}
+
+Mode layoutMode = Mode.COVID;
 
 PFont font;
 PFont boldFont;
@@ -55,14 +62,26 @@ int NUM_PER_ROW   = 7;
 
 void setup()
 {
-  fullScreen( P3D );
-
-  if( celebMode )
+  fullScreen( P3D, 0 );
+  
+  switch(layoutMode)
   {
-    NUM_CONTS   = 18;
-    NUM_PER_ROW = 6;
+    case CELEB:
+      NUM_CONTS   = 18;
+      NUM_PER_ROW = 6;
+      stillIn     = "18";
+      break;
+    case COVID:
+      NUM_CONTS   = 12;
+      NUM_PER_ROW = 4;
+      stillIn     = "12";
+      break;
+    case NORMAL:
+      NUM_CONTS   = 21;
+      NUM_PER_ROW = 7;
+      stillIn     = "21";
   }
-
+  
   oscIn = new OscP5( this, 7000 );
 
   font      = createFont( "futura-condensed-normal.ttf", 33 ); // Used for all data in table
@@ -118,11 +137,19 @@ void draw()
   float xPos     = xStart;
   float yPos     = yStart;
   
-  if( celebMode )
+  
+    switch(layoutMode)
   {
-    ySpacing = 55;
+    case CELEB:
+      ySpacing = 55;
+      break;
+    case COVID:
+      ySpacing = 83;
+      break;
+    default:
+      ySpacing = 48;
   }
-
+  
   textFont( boldFont );
 
   topScorers          = 0;
@@ -270,11 +297,23 @@ void drawGrid()
   float sp    = 3;
   int nameFontSize = 31;
   
-  if( celebMode )
+  switch(layoutMode)
   {
-    rowX  = 1005;
-    rectW = 148;
-    nameFontSize = 35;
+    case CELEB:
+      rowX  = 1005;
+      rectW = 148;
+      nameFontSize = 35;
+      break;
+    case COVID:
+      rowX  = 1005;
+      rectW = 222;
+      nameFontSize = 40;
+      break;
+    case NORMAL:
+      rowX  = 1010;
+      rectW = 125;
+      nameFontSize = 31;
+      break;
   }
   
   int contIndex = 1;
